@@ -803,7 +803,7 @@
                                 <div class="absolute inset-0 opacity-10">
                                     <img src="https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&q=80&w=1000" alt="Pattern" class="w-full h-full object-cover" referrerPolicy="no-referrer">
                                 </div>
-                                <div class="absolute -bottom-16 left-12 w-32 h-32 bg-primary rounded-full border-4 border-white flex items-center justify-center text-white font-serif text-4xl border-accent/20">A</div>
+                                <div class="absolute -bottom-16 left-12 w-32 h-32 bg-primary rounded-full border-4 border-white flex items-center justify-center text-white font-serif text-4xl border-accent/20 user-initial-display">A</div>
                             </div>
                             <div class="pt-24 pb-12 px-12">
                                 <div class="flex justify-between items-start mb-12">
@@ -811,7 +811,7 @@
                                         <h3 class="text-3xl font-serif text-primary mb-1 user-name-display">Ahmed Al-Sayed</h3>
                                         <p class="text-accent text-[10px] uppercase tracking-[0.3em] font-bold user-role-display">Elite Member since 2023</p>
                                     </div>
-                                    <button class="bg-primary text-white px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-slate-800 transition-colors">Edit Profile</button>
+                                    <button onclick="openEditProfileModal()" class="bg-primary text-white px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-slate-800 transition-colors">Edit Profile</button>
                                 </div>
                                 <div class="grid grid-cols-2 gap-12 py-10 border-t border-gray-50">
                                     <div>
@@ -820,11 +820,11 @@
                                     </div>
                                     <div>
                                         <p class="text-[9px] text-gray-400 uppercase tracking-widest mb-2">Secure Contact</p>
-                                        <p class="font-serif text-lg text-primary">+1 234 567 890</p>
+                                        <p class="font-serif text-lg text-primary user-phone-display">+1 234 567 890</p>
                                     </div>
                                     <div>
                                         <p class="text-[9px] text-gray-400 uppercase tracking-widest mb-2">Nationality</p>
-                                        <p class="font-serif text-lg text-primary">United Arab Emirates</p>
+                                        <p class="font-serif text-lg text-primary user-nationality-display">United Arab Emirates</p>
                                     </div>
                                     <div>
                                         <p class="text-[9px] text-gray-400 uppercase tracking-widest mb-2">Preferred Language</p>
@@ -1173,6 +1173,46 @@
                     </div>
                 </div>
 
+                <!-- Edit Profile Modal -->
+                <div id="edit-profile-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
+                    <div class="absolute inset-0 bg-primary/60 backdrop-blur-sm" onclick="closeEditProfileModal()"></div>
+                    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl relative z-10 overflow-hidden fade-in">
+                        <div class="bg-primary p-8 text-white relative">
+                            <h4 class="font-serif text-2xl mb-2">Edit Profile</h4>
+                            <p class="text-accent text-xs uppercase tracking-widest font-bold">Update Your Information</p>
+                        </div>
+                        <div class="p-8 space-y-6">
+                            <div class="flex flex-col items-center gap-4 mb-6">
+                                <div id="profile-preview-container" class="w-24 h-24 rounded-full bg-primary flex items-center justify-center text-white text-2xl font-serif overflow-hidden border-4 border-accent/10">
+                                    A
+                                </div>
+                                <label class="cursor-pointer bg-surface px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-primary border border-gray-100 hover:border-accent transition-colors">
+                                    Change Photo
+                                    <input type="file" id="profile-photo-input" class="hidden" accept="image/*" onchange="handleProfilePhotoChange(this)">
+                                </label>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-[9px] uppercase tracking-widest text-gray-400 font-bold mb-1 block">Full Name</label>
+                                    <input type="text" id="edit-profile-name" class="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl text-sm" placeholder="Your Name">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] uppercase tracking-widest text-gray-400 font-bold mb-1 block">Phone Number</label>
+                                    <input type="text" id="edit-profile-phone" class="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl text-sm" placeholder="Phone Number">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] uppercase tracking-widest text-gray-400 font-bold mb-1 block">Nationality</label>
+                                    <input type="text" id="edit-profile-nationality" class="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl text-sm" placeholder="Nationality">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-8 bg-gray-50 flex gap-4">
+                            <button onclick="closeEditProfileModal()" class="flex-1 border border-gray-200 py-4 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-white transition-colors">Cancel</button>
+                            <button onclick="saveProfileChanges()" class="flex-1 bg-primary text-white py-4 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-slate-800 transition-colors">Save Profile</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Booking Modal -->
                 <div id="booking-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
                     <div class="absolute inset-0 bg-primary/60 backdrop-blur-sm" onclick="closeBookingModal()"></div>
@@ -1480,10 +1520,19 @@
 
         // Expose Firebase to global scope
         window.firebase = {
-            auth, db, googleProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
+            auth, db, storage, googleProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
             collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit,
+            ref, uploadBytes, getDownloadURL,
             handleFirestoreError, OperationType
         };
+
+        async function uploadFile(file, path) {
+            if (!file) return null;
+            const { storage, ref, uploadBytes, getDownloadURL } = window.firebase;
+            const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
+            const snapshot = await uploadBytes(storageRef, file);
+            return await getDownloadURL(snapshot.ref);
+        }
 
         // Initialize Auth Listener
         onAuthStateChanged(auth, async (user) => {
@@ -1528,7 +1577,10 @@
                 window[collName] = data;
                 localStorage.setItem(collName, JSON.stringify(data));
                 
-                if (collName === 'trips') renderTrips();
+                if (collName === 'trips') {
+                    renderTrips();
+                    renderLandingPage(); // Ensure landing page updates when trips change
+                }
                 if (collName === 'bookings') renderBookings();
                 if (collName === 'appointments') renderAppointments();
                 if (collName === 'gallery' || collName === 'pastTrips') renderLandingPage();
@@ -1672,7 +1724,12 @@
             };
 
             try {
-                const { db, collection, setDoc, doc, handleFirestoreError, OperationType } = window.firebase;
+                const btn = document.querySelector('button[onclick="handleAddTrip()"]');
+                const originalText = btn.innerText;
+                btn.innerText = 'Creating...';
+                btn.disabled = true;
+
+                const { db, collection, setDoc, doc } = window.firebase;
                 const tripRef = doc(collection(db, 'trips'));
                 await setDoc(tripRef, newTrip);
                 alert('Journey created successfully');
@@ -1680,8 +1737,12 @@
                 // Clear form
                 document.querySelectorAll('#tab-admin input, #tab-admin textarea').forEach(el => el.value = '');
                 document.getElementById('admin-trip-type').value = 'Umrah';
+
+                btn.innerText = originalText;
+                btn.disabled = false;
             } catch (err) {
-                window.firebase.handleFirestoreError(err, window.firebase.OperationType.WRITE, 'trips');
+                console.error("Error adding trip:", err);
+                alert('Failed to create journey');
             }
         }
 
@@ -1794,12 +1855,21 @@
             };
 
             try {
-                const { db, doc, updateDoc, handleFirestoreError, OperationType } = window.firebase;
+                const btn = document.querySelector('button[onclick="saveEditTrip()"]');
+                const originalText = btn.innerText;
+                btn.innerText = 'Saving...';
+                btn.disabled = true;
+
+                const { db, doc, updateDoc } = window.firebase;
                 await updateDoc(doc(db, 'trips', id.toString()), updatedData);
                 alert('Journey updated successfully');
                 closeEditTripModal();
+
+                btn.innerText = originalText;
+                btn.disabled = false;
             } catch (err) {
-                window.firebase.handleFirestoreError(err, window.firebase.OperationType.UPDATE, `trips/${id}`);
+                console.error("Error updating trip:", err);
+                alert('Failed to update journey');
             }
         }
 
@@ -2459,7 +2529,7 @@ Booked with Nazre Tours & Travels
             }
 
             if (upcomingTripsGrid) {
-                upcomingTripsGrid.innerHTML = trips.slice(0, 3).map(trip => `
+                upcomingTripsGrid.innerHTML = trips.slice(0, 6).map(trip => `
                     <div class="group cursor-pointer" data-editable data-editable-type="trip" data-editable-id="${trip.id}">
                         <div class="relative h-[500px] overflow-hidden mb-8 rounded-3xl shadow-2xl">
                             <img src="${trip.hotelImages?.[0] || 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?auto=format&fit=crop&q=80&w=800'}" alt="${trip.title}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" referrerPolicy="no-referrer">
@@ -2830,8 +2900,16 @@ Booked with Nazre Tours & Travels
             if (!currentUser) return;
             document.querySelectorAll('.user-name-display').forEach(el => el.innerText = currentUser.name);
             document.querySelectorAll('.user-email-display').forEach(el => el.innerText = currentUser.email);
+            document.querySelectorAll('.user-phone-display').forEach(el => el.innerText = currentUser.phone || 'Not provided');
+            document.querySelectorAll('.user-nationality-display').forEach(el => el.innerText = currentUser.nationality || 'Not provided');
             document.querySelectorAll('.user-role-display').forEach(el => el.innerText = currentUser.role === 'admin' ? 'Grand Administrator' : 'Elite Member');
-            document.querySelectorAll('.user-initial-display').forEach(el => el.innerText = currentUser.name.charAt(0).toUpperCase());
+            document.querySelectorAll('.user-initial-display').forEach(el => {
+                if (currentUser.photoURL) {
+                    el.innerHTML = `<img src="${currentUser.photoURL}" class="w-full h-full object-cover" referrerPolicy="no-referrer">`;
+                } else {
+                    el.innerText = currentUser.name.charAt(0).toUpperCase();
+                }
+            });
         }
 
         function checkAdminAccess() {
@@ -2992,13 +3070,97 @@ Booked with Nazre Tours & Travels
             }
         }
 
+        function openEditProfileModal() {
+            if (!currentUser) return;
+            document.getElementById('edit-profile-name').value = currentUser.name;
+            document.getElementById('edit-profile-phone').value = currentUser.phone || '';
+            document.getElementById('edit-profile-nationality').value = currentUser.nationality || '';
+            
+            const preview = document.getElementById('profile-preview-container');
+            if (currentUser.photoURL) {
+                preview.innerHTML = `<img src="${currentUser.photoURL}" class="w-full h-full object-cover" referrerPolicy="no-referrer">`;
+            } else {
+                preview.innerText = currentUser.name.charAt(0).toUpperCase();
+            }
+            
+            document.getElementById('edit-profile-modal').classList.remove('hidden');
+        }
+
+        function closeEditProfileModal() {
+            document.getElementById('edit-profile-modal').classList.add('hidden');
+        }
+
+        async function handleProfilePhotoChange(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const preview = document.getElementById('profile-preview-container');
+            preview.innerHTML = `<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>`;
+            
+            try {
+                const url = await uploadFile(file, `profiles/${currentUser.uid}`);
+                preview.innerHTML = `<img src="${url}" class="w-full h-full object-cover" referrerPolicy="no-referrer">`;
+                preview.dataset.url = url;
+            } catch (err) {
+                console.error("Upload error:", err);
+                alert("Failed to upload photo");
+                preview.innerText = currentUser.name.charAt(0).toUpperCase();
+            }
+        }
+
+        async function saveProfileChanges() {
+            const name = document.getElementById('edit-profile-name').value;
+            const phone = document.getElementById('edit-profile-phone').value;
+            const nationality = document.getElementById('edit-profile-nationality').value;
+            const photoURL = document.getElementById('profile-preview-container').dataset.url || currentUser.photoURL;
+            
+            if (!name) return alert("Name is required");
+            
+            try {
+                const { db, doc, updateDoc, auth, updateProfile } = window.firebase;
+                
+                // Update Firebase Auth Profile
+                await updateProfile(auth.currentUser, { displayName: name, photoURL: photoURL });
+                
+                // Update Firestore
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    name, phone, nationality, photoURL
+                });
+                
+                alert("Profile updated successfully");
+                closeEditProfileModal();
+            } catch (err) {
+                console.error("Profile update error:", err);
+                alert("Failed to update profile");
+            }
+        }
+
+        async function handleFileUpload(inputId, path) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const textarea = document.getElementById(inputId);
+                const originalText = textarea.value;
+                textarea.value = originalText + (originalText ? '\n' : '') + "Uploading...";
+                
+                try {
+                    const url = await uploadFile(file, path);
+                    textarea.value = originalText + (originalText ? '\n' : '') + url;
+                } catch (err) {
+                    console.error("Upload error:", err);
+                    alert("Failed to upload image");
+                    textarea.value = originalText;
+                }
+            };
+            input.click();
+        }
+
         function simulateUpload(inputId) {
-            const keywords = ['mecca', 'medina', 'kaaba', 'mosque', 'spiritual', 'travel'];
-            const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
-            const randomId = Math.floor(Math.random() * 1000);
-            const newUrl = `https://picsum.photos/seed/${randomKeyword}${randomId}/1200/800`;
-            document.getElementById(inputId).value = newUrl;
-            alert('Image uploaded successfully (Simulated)');
+            handleFileUpload(inputId, 'trips');
         }
 
         function closeQuickEdit() {
