@@ -1,0 +1,114 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email", "role"]
+    },
+    "Trip": {
+      "title": "Trip",
+      "description": "Hajj or Umrah trip package",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["Hajj", "Umrah"] },
+        "price": { "type": "number" },
+        "dates": { "type": "string" },
+        "details": { "type": "string" },
+        "seats": { "type": "number" },
+        "seatsBooked": { "type": "number" },
+        "hotelName": { "type": "string" },
+        "hotelLocation": { "type": "string" },
+        "hotelImages": { "type": "array", "items": { "type": "string" } },
+        "foodDetails": { "type": "string" },
+        "foodImages": { "type": "array", "items": { "type": "string" } },
+        "transportDetails": { "type": "string" },
+        "ziyaratPlaces": { "type": "array", "items": { "type": "string" } },
+        "ziyaratImages": { "type": "array", "items": { "type": "string" } },
+        "services": { "type": "array", "items": { "type": "string" } },
+        "gifts": { "type": "array", "items": { "type": "string" } },
+        "gallery": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["title", "type", "price", "seats"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "User trip reservation",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "tripId": { "type": "string" },
+        "tripTitle": { "type": "string" },
+        "userName": { "type": "string" },
+        "seats": { "type": "number" },
+        "totalPrice": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "tripId", "seats", "totalPrice"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Consultation appointment",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "notes": { "type": "string" },
+        "status": { "type": "string", "enum": ["scheduled", "completed", "cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "date", "time"]
+    },
+    "GalleryItem": {
+      "title": "GalleryItem",
+      "description": "General gallery image",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["title", "imageUrl"]
+    },
+    "PastTrip": {
+      "title": "PastTrip",
+      "description": "Legacy trip record",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["title", "imageUrl"]
+    },
+    "GlobalConfig": {
+      "title": "GlobalConfig",
+      "description": "Global application settings",
+      "type": "object",
+      "properties": {
+        "services": { "type": "array", "items": { "type": "string" } },
+        "gifts": { "type": "array", "items": { "type": "string" } },
+        "heroTitle": { "type": "string" },
+        "heroSubtitle": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{uid}": { "schema": "User", "description": "User profiles" },
+    "/trips/{tripId}": { "schema": "Trip", "description": "Trip packages" },
+    "/bookings/{bookingId}": { "schema": "Booking", "description": "Trip reservations" },
+    "/appointments/{appointmentId}": { "schema": "Appointment", "description": "Consultations" },
+    "/gallery/{itemId}": { "schema": "GalleryItem", "description": "General gallery" },
+    "/pastTrips/{tripId}": { "schema": "PastTrip", "description": "Legacy trips" },
+    "/config/global": { "schema": "GlobalConfig", "description": "Global settings" }
+  }
+}
