@@ -1510,8 +1510,9 @@
     <script type="module">
         import { getGeminiResponse, getComplexReasoningResponse } from '/src/aiAssistant.ts';
         import { 
-            auth, db, googleProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
+            auth, db, storage, googleProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
             collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit,
+            ref, uploadBytes, getDownloadURL,
             handleFirestoreError, OperationType
         } from '/src/firebase.ts';
 
@@ -1608,8 +1609,7 @@
                 renderLandingPage();
             }
         }, (err) => handleFirestoreError(err, OperationType.GET, 'settings/global'));
-    </script>
-    <script>
+
         // --- Authentication System ---
         let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
         let trips = JSON.parse(localStorage.getItem('trips')) || [];
@@ -2880,20 +2880,13 @@ Booked with Nazre Tours & Travels
                 if (error.code === 'auth/operation-not-allowed') {
                     alert('Login failed: Email/Password provider is not enabled in your Firebase Console.');
                 } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    alert('Invalid credentials or user not found. Please check your email/phone and password.');
+                    alert('Invalid credentials or user not found. If you haven\'t registered yet, please create an account first. If you signed up with Google, please use the Google Login button.');
                 } else if (error.code === 'auth/network-request-failed') {
                     alert('Network error. Please check your internet connection.');
                 } else {
                     alert(`Login Error: ${error.message}`);
                 }
             }
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('currentUser');
-            currentUser = null;
-            switchView('landing-view');
-            initAuth();
         }
 
         function updateUserDisplays() {
@@ -3304,6 +3297,22 @@ Booked with Nazre Tours & Travels
                 nav.classList.add('py-4');
                 nav.classList.remove('py-2', 'shadow-xl');
             }
+        });
+
+        // Expose functions to global scope for HTML event handlers
+        Object.assign(window, {
+            handleLogin, handleGoogleLogin, toggleAuthMode, handleRegister,
+            switchView, switchTab, toggleDevMode, handleLogout,
+            handleBookAppointment, openEditProfileModal, closeEditProfileModal,
+            simulateUpload, handleAddTrip, handleAddGallery, handleAddPastTrip,
+            saveGlobalServices, saveGlobalGifts, closeEditTripModal,
+            saveEditTrip, saveProfileChanges, closeBookingModal,
+            confirmBookingStep1, showBookingStep, confirmBookingStep2,
+            toggleChat, closeQuickEdit, saveQuickEdit, viewTripDetails,
+            openBookingModal, openEditTripModal, deleteTrip, cancelBooking,
+            emailItinerary, deleteAppointment, updateAppointmentStatus,
+            deleteGalleryItem, deletePastTrip, showAuth, handleProfilePhotoChange,
+            updateBookingStatus, handleFileUpload
         });
     </script>
 </body>
