@@ -1571,11 +1571,21 @@
         async function handleGoogleLogin() {
             try {
                 const { auth, signInWithPopup, googleProvider } = window.firebase;
+                console.log("Attempting Google Login...");
                 await signInWithPopup(auth, googleProvider);
+                alert('Google Sign-in successful!');
                 switchView('landing-view');
             } catch (error) {
-                console.error("Login Error:", error);
-                alert("Failed to sign in with Google.");
+                console.error("Google Login Error Details:", error);
+                if (error.code === 'auth/operation-not-allowed') {
+                    alert('Google Login failed: Google provider is not enabled in your Firebase Console.');
+                } else if (error.code === 'auth/popup-blocked') {
+                    alert('Login failed: The popup was blocked by your browser. Please allow popups for this site.');
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    // User closed the popup, no need for alert
+                } else {
+                    alert(`Google Login Error: ${error.message}`);
+                }
             }
         }
 
@@ -2748,6 +2758,7 @@ Booked with Nazre Tours & Travels
 
             try {
                 const { auth, createUserWithEmailAndPassword, updateProfile, db, doc, setDoc, handleFirestoreError, OperationType } = window.firebase;
+                console.log("Attempting registration for:", email);
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
@@ -2767,8 +2778,16 @@ Booked with Nazre Tours & Travels
                 alert('Registration successful!');
                 switchView('landing-view');
             } catch (error) {
-                console.error("Registration Error:", error);
-                alert(error.message);
+                console.error("Registration Error Details:", error);
+                if (error.code === 'auth/operation-not-allowed') {
+                    alert('Registration failed: Email/Password provider is not enabled in your Firebase Console.');
+                } else if (error.code === 'auth/email-already-in-use') {
+                    alert('Registration failed: This email/phone is already registered.');
+                } else if (error.code === 'auth/network-request-failed') {
+                    alert('Network error. Please check your internet connection.');
+                } else {
+                    alert(`Registration Error: ${error.message}`);
+                }
             }
         }
 
@@ -2782,12 +2801,21 @@ Booked with Nazre Tours & Travels
 
             try {
                 const { auth, signInWithEmailAndPassword } = window.firebase;
+                console.log("Attempting login for:", email);
                 await signInWithEmailAndPassword(auth, email, password);
                 alert('Sign in successful!');
                 switchView('landing-view');
             } catch (error) {
-                console.error("Login Error:", error);
-                alert('Invalid credentials or user not found');
+                console.error("Login Error Details:", error);
+                if (error.code === 'auth/operation-not-allowed') {
+                    alert('Login failed: Email/Password provider is not enabled in your Firebase Console.');
+                } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    alert('Invalid credentials or user not found. Please check your email/phone and password.');
+                } else if (error.code === 'auth/network-request-failed') {
+                    alert('Network error. Please check your internet connection.');
+                } else {
+                    alert(`Login Error: ${error.message}`);
+                }
             }
         }
 
